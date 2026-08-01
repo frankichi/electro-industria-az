@@ -42,7 +42,7 @@ export default function Comprobantes() {
         <div>
           <h1 className="font-display text-3xl font-bold uppercase">Comprobantes</h1>
           <p className="text-sm text-neutral-500">
-            Historial de boletas y facturas emitidas. Selecciona una para reimprimirla.
+            Historial de proformas y facturas emitidas. Selecciona una para reimprimirla.
           </p>
         </div>
         <input

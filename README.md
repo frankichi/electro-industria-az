@@ -18,7 +18,7 @@ El sistema también permite escanear con la **cámara del celular** (botón "Cá
 
 ### 1. Tu hoja de Google Sheets
 
-Ya tienes creada `ElectroIndustriaAZ BD`. No necesitas crear pestañas ni columnas a mano: **el sistema las crea automáticamente** (`Productos`, `Ventas`, `VentaItems`, `Movimientos`, `Usuarios`) la primera vez que se conecta.
+Ya tienes creada `ElectroIndustriaAZ BD`. No necesitas crear pestañas ni columnas a mano: **el sistema las crea automáticamente** (`Productos`, `Ventas`, `VentaItems`, `Movimientos`, `Usuarios`, `Clientes`, `Categorias`) la primera vez que se conecta.
 
 ### 2. Instalar el Apps Script dentro de tu hoja (reemplaza a la cuenta de servicio)
 

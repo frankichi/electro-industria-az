@@ -21,14 +21,18 @@ export default function Ticket({ venta }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="" className="h-16 w-16 object-contain mx-auto mb-1" />
         <div className="font-bold">{emp.nombre}</div>
-        {emp.lema && <div className="text-[10px]">{emp.lema}</div>}
-        <div>RUC: {emp.ruc}</div>
-        <div>{emp.direccion}</div>
-        {emp.telefono && <div>Tel: {emp.telefono}</div>}
+        {venta.tipo === "FACTURA" && (
+          <>
+            {emp.lema && <div className="text-[10px]">{emp.lema}</div>}
+            <div>RUC: {emp.ruc}</div>
+            <div>{emp.direccion}</div>
+            {emp.telefono && <div>Tel: {emp.telefono}</div>}
+          </>
+        )}
       </div>
       <div className="my-1">{linea}</div>
       <div className="text-center font-bold">
-        {venta.tipo === "FACTURA" ? "FACTURA ELECTRÓNICA" : "BOLETA DE VENTA"}
+        {venta.tipo === "FACTURA" ? "FACTURA ELECTRÓNICA" : "PROFORMA DE VENTA"}
         <br />
         {venta.serie}-{venta.numero}
       </div>

@@ -7,7 +7,7 @@ const IGV = 0.18;
 
 export default function PuntoDeVenta() {
   const [carrito, setCarrito] = useState([]);
-  const [tipo, setTipo] = useState("BOLETA");
+  const [tipo, setTipo] = useState("PROFORMA");
   const [cliente, setCliente] = useState({ doc: "", nombre: "", direccion: "" });
   const [buscandoCliente, setBuscandoCliente] = useState(false);
   const [clienteEncontrado, setClienteEncontrado] = useState(null); // "local" | "sunat" | null
@@ -272,11 +272,11 @@ export default function PuntoDeVenta() {
           <h2 className="font-display text-xl font-bold uppercase">Comprobante</h2>
 
           <div className="grid grid-cols-2 gap-2" role="group" aria-label="Tipo de comprobante">
-            {["BOLETA", "FACTURA"].map((t) => (
+            {["PROFORMA", "FACTURA"].map((t) => (
               <button key={t} type="button"
                 onClick={() => setTipo(t)}
                 className={`btn ${tipo === t ? "bg-ink text-white" : "border border-linea hover:bg-fondo"}`}>
-                {t === "BOLETA" ? "Boleta" : "Factura"}
+                {t === "PROFORMA" ? "Proforma" : "Factura"}
               </button>
             ))}
           </div>

@@ -49,6 +49,7 @@ const CABECERAS = {
     "doc", "tipo_doc", "nombre", "direccion", "estado_sunat", "condicion_sunat",
     "fecha_registro", "creado_por",
   ],
+  Categorias: ["nombre", "fecha_registro", "creado_por"],
 };
 
 function doPost(e) {

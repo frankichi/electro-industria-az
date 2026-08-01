@@ -28,7 +28,7 @@ export async function GET() {
 }
 
 // POST /api/ventas
-// body: { tipo: "BOLETA"|"FACTURA", cliente: {doc,nombre,direccion},
+// body: { tipo: "PROFORMA"|"FACTURA", cliente: {doc,nombre,direccion},
 //         metodo_pago, items: [{codigo,cantidad}] }
 export async function POST(req) {
   const g = requerir();
@@ -37,7 +37,7 @@ export async function POST(req) {
     await asegurarEstructura();
     const { tipo, cliente = {}, metodo_pago = "EFECTIVO", items = [] } = await req.json();
 
-    if (!["BOLETA", "FACTURA"].includes(tipo)) {
+    if (!["PROFORMA", "FACTURA"].includes(tipo)) {
       return NextResponse.json({ error: "Tipo de comprobante inválido" }, { status: 400 });
     }
     if (!items.length) {
@@ -82,7 +82,7 @@ export async function POST(req) {
 
     // Numeración correlativa por tipo: B001-000001 / F001-000001
     const ventas = await leerTabla("Ventas");
-    const serie = tipo === "BOLETA" ? "B001" : "F001";
+    const serie = tipo === "PROFORMA" ? "P001" : "F001";
     const nums = ventas
       .filter((v) => v.serie === serie)
       .map((v) => parseInt(v.numero, 10) || 0);
@@ -92,7 +92,7 @@ export async function POST(req) {
     const venta = {
       id, tipo, serie, numero, fecha: ahora(),
       cliente_doc: cliente.doc || "",
-      cliente_nombre: cliente.nombre || (tipo === "BOLETA" ? "CLIENTE VARIOS" : ""),
+      cliente_nombre: cliente.nombre || (tipo === "PROFORMA" ? "CLIENTE VARIOS" : ""),
       cliente_direccion: cliente.direccion || "",
       subtotal, igv, total, metodo_pago,
       num_items: detalle.length,

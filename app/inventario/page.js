@@ -8,11 +8,12 @@ const VACIO = {
   stock: "", stock_minimo: "", costo: "", precio: "", ubicacion: "",
 };
 
-const CATEGORIAS = [
+const CATEGORIAS_BASE = [
   "Cables y conductores", "Iluminación", "Tableros y llaves",
   "Tomacorrientes e interruptores", "Herramientas", "Motores y bombas",
   "Canalización (tubos/canaletas)", "Ferretería general", "EPP / Seguridad", "Otros",
 ];
+const NUEVA_CATEGORIA = "__nueva__";
 
 export default function Inventario() {
   const [productos, setProductos] = useState([]);
@@ -23,6 +24,7 @@ export default function Inventario() {
   const [guardando, setGuardando] = useState(false);
   const [msj, setMsj] = useState(null);
   const [sesion, setSesion] = useState(null);
+  const [categorias, setCategorias] = useState(CATEGORIAS_BASE);
   const esAdmin = sesion?.rol === "admin";
 
   async function cargar() {
@@ -34,7 +36,33 @@ export default function Inventario() {
   useEffect(() => {
     cargar();
     fetch("/api/auth/yo").then((r) => r.json()).then((d) => setSesion(d.sesion));
+    cargarCategorias();
   }, []);
+
+  async function cargarCategorias() {
+    const r = await fetch("/api/categorias").then((x) => x.json());
+    const guardadas = r.categorias || [];
+    const fusion = [...CATEGORIAS_BASE];
+    guardadas.forEach((c) => { if (!fusion.some((f) => f.toLowerCase() === c.toLowerCase())) fusion.push(c); });
+    setCategorias(fusion);
+  }
+
+  async function alCambiarCategoria(valor) {
+    if (valor !== NUEVA_CATEGORIA) {
+      set("categoria", valor);
+      return;
+    }
+    const nueva = window.prompt("Nombre de la categoría nueva:");
+    const limpio = (nueva || "").trim();
+    if (!limpio) return;
+    await fetch("/api/categorias", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre: limpio }),
+    });
+    setCategorias((c) => (c.some((x) => x.toLowerCase() === limpio.toLowerCase()) ? c : [...c, limpio]));
+    set("categoria", limpio);
+  }
 
   function alEscanear(codigo) {
     const existente = productos.find((p) => String(p.codigo).trim() === codigo);
@@ -165,9 +193,10 @@ export default function Inventario() {
             <div>
               <label className="label" htmlFor="f-categoria">Categoría</label>
               <select id="f-categoria" className="input" value={form.categoria}
-                onChange={(e) => set("categoria", e.target.value)}>
+                onChange={(e) => alCambiarCategoria(e.target.value)}>
                 <option value="">— Seleccionar —</option>
-                {CATEGORIAS.map((c) => <option key={c}>{c}</option>)}
+                {categorias.map((c) => <option key={c}>{c}</option>)}
+                <option value={NUEVA_CATEGORIA}>+ Agregar categoría nueva…</option>
               </select>
             </div>
             <div>
