@@ -1,14 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 
-function Rayo() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-7 h-7" fill="currentColor" aria-hidden="true">
-      <path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2z" />
-    </svg>
-  );
-}
-
 export default function Login() {
   const [modo, setModo] = useState("login"); // login | inicial | recuperar
   const [cargandoEstado, setCargandoEstado] = useState(true);
@@ -86,13 +78,10 @@ export default function Login() {
     <div className="min-h-[75vh] flex items-center justify-center">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2">
-            <span className="bg-ink text-volt rounded-md p-2"><Rayo /></span>
-            <span className="font-display font-bold text-3xl tracking-wide uppercase">
-              Electro Industria A&amp;Z
-            </span>
-          </div>
-          <p className="text-xs text-neutral-500 mt-2 uppercase tracking-wide">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Electro Industria A&Z"
+            className="h-28 w-28 object-contain mx-auto" />
+          <p className="text-xs text-neutral-500 mt-1 uppercase tracking-wide">
             Servicios eléctricos · Materiales y equipos industriales
           </p>
         </div>

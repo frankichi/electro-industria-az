@@ -18,6 +18,8 @@ export default function Ticket({ venta }) {
       className="bg-white border border-linea rounded p-4 font-mono text-[12px] leading-snug max-w-xs mx-auto"
     >
       <div className="text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="" className="h-16 w-16 object-contain mx-auto mb-1" />
         <div className="font-bold">{emp.nombre}</div>
         {emp.lema && <div className="text-[10px]">{emp.lema}</div>}
         <div>RUC: {emp.ruc}</div>

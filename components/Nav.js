@@ -11,14 +11,6 @@ const RUTAS = [
   { href: "/usuarios", label: "Usuarios", solo: "admin" },
 ];
 
-function Rayo() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor" aria-hidden="true">
-      <path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2z" />
-    </svg>
-  );
-}
-
 export default function Nav() {
   const path = usePathname();
   const [sesion, setSesion] = useState(null);
@@ -44,7 +36,10 @@ export default function Nav() {
     <header className="bg-ink text-white sticky top-0 z-30 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 sm:gap-3 h-14 overflow-x-auto">
         <Link href={sesion?.rol === "admin" ? "/" : "/ventas"} className="flex items-center gap-2 mr-2 shrink-0">
-          <span className="bg-volt text-ink rounded p-1"><Rayo /></span>
+          <span className="bg-white rounded-md p-1 flex items-center justify-center h-9 w-9 shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-icono.png" alt="Electro Industria A&Z" className="h-full w-full object-contain" />
+          </span>
           <span className="font-display font-bold text-xl tracking-wide uppercase leading-none">
             <span className="hidden md:inline">Electro Industria </span>A&amp;Z
           </span>
