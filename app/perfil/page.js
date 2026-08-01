@@ -31,7 +31,7 @@ export default function Perfil() {
 
   return (
     <div className="max-w-sm mx-auto space-y-4">
-      <h1 className="font-display text-3xl font-bold uppercase">Mi cuenta</h1>
+      <h1 className="titulo-pagina">Mi cuenta</h1>
       <form onSubmit={cambiar} className="card p-5 space-y-3">
         <h2 className="font-display text-lg font-bold uppercase">Cambiar contraseña</h2>
         {msj && (

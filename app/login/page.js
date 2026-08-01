@@ -86,7 +86,9 @@ export default function Login() {
           </p>
         </div>
 
-        <div className="card p-6 space-y-4">
+        <div className="card overflow-hidden">
+          <div className="franja" />
+          <div className="p-6 space-y-4">
           {msj && (
             <div
               role="status"
@@ -207,6 +209,7 @@ export default function Login() {
               </button>
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>

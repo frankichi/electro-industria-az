@@ -6,40 +6,88 @@
 
 body {
   @apply bg-fondo text-ink font-body antialiased;
+  background-image: radial-gradient(circle at 15% -10%, rgba(46, 46, 208, 0.05), transparent 40%),
+    radial-gradient(circle at 90% 0%, rgba(245, 179, 1, 0.05), transparent 35%);
+  background-attachment: fixed;
 }
 
-/* Franja de seguridad industrial: firma visual del sistema */
+/* ── Franja de identidad: azul del logo + amarillo industrial ── */
 .franja {
-  height: 6px;
+  height: 5px;
   background: repeating-linear-gradient(
     -45deg,
-    #f5b301 0 14px,
-    #1a1d21 14px 28px
+    #2e2ed0 0 16px,
+    #16181f 16px 32px,
+    #f5b301 32px 40px,
+    #16181f 40px 48px
   );
 }
 
+/* ── Tarjetas ── */
 .card {
-  @apply bg-panel border border-linea rounded-lg shadow-card;
+  @apply bg-panel border border-linea shadow-card;
+  border-radius: 14px;
 }
 
+/* ── Botones ── */
 .btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 font-semibold text-sm transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-electrico;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-semibold text-sm transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-electrico;
 }
-.btn-volt { @apply btn bg-volt text-ink hover:bg-volt-dark; }
-.btn-ink { @apply btn bg-ink text-white hover:bg-black; }
-.btn-ghost { @apply btn bg-transparent border border-linea hover:bg-fondo; }
-.btn-rojo { @apply btn bg-alerta text-white hover:bg-red-700; }
+.btn-volt { @apply btn bg-volt text-ink hover:bg-volt-dark shadow-sm hover:shadow; }
+.btn-ink { @apply btn bg-ink text-white hover:bg-black shadow-sm; }
+.btn-azul { @apply btn bg-electrico text-white hover:bg-electrico-dark shadow-sm hover:shadow-pop; }
+.btn-ghost { @apply btn bg-white border border-linea hover:border-electrico/40 hover:bg-electrico-pale/50; }
+.btn-rojo { @apply btn bg-alerta text-white hover:bg-red-700 shadow-sm; }
 
+/* ── Campos ── */
 .input {
-  @apply w-full rounded-md border border-linea bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-electrico/40 focus:border-electrico placeholder:text-neutral-400;
+  @apply w-full rounded-lg border border-linea bg-white px-3 py-2.5 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-electrico/30 focus:border-electrico placeholder:text-neutral-400 hover:border-neutral-300;
 }
 .label { @apply block text-xs font-semibold uppercase tracking-wide text-neutral-500 mb-1; }
 
+/* ── Código de producto (estilo etiqueta industrial) ── */
 .codigo {
-  @apply font-mono text-[13px] font-medium bg-ink text-volt px-1.5 py-0.5 rounded;
+  @apply font-mono text-[12.5px] font-medium bg-ink text-volt px-1.5 py-0.5 rounded;
+  letter-spacing: 0.02em;
 }
 
-.tag { @apply inline-block text-xs font-semibold px-2 py-0.5 rounded-full; }
+.tag { @apply inline-block text-xs font-semibold px-2.5 py-1 rounded-full; }
+
+/* ── Tablas: se aplican a todas las tablas dentro de .card ── */
+.card table thead tr {
+  @apply bg-fondo/80;
+}
+.card table thead th {
+  @apply text-[11px] font-bold uppercase tracking-wider text-neutral-400;
+}
+.card table tbody tr {
+  @apply transition-colors duration-150;
+}
+.card table tbody tr:nth-child(even) {
+  background: rgba(244, 245, 248, 0.5);
+}
+.card table tbody tr:hover {
+  background: rgba(237, 237, 252, 0.7);
+}
+
+/* ── Encabezados de página ── */
+.titulo-pagina {
+  @apply font-display text-3xl font-bold uppercase tracking-wide;
+}
+.titulo-pagina::after {
+  content: "";
+  @apply block mt-1;
+  width: 44px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #2e2ed0 55%, #f5b301 55%);
+}
+
+/* ── Scrollbar más discreta ── */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4d6df; border-radius: 6px; border: 2px solid #f4f5f8; }
+::-webkit-scrollbar-thumb:hover { background: #b9bcc9; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import {
-  asegurarEstructura, leerTabla, agregarFilas, actualizarFila, ahora,
+  asegurarEstructura, leerTabla, leerTablas, agregarFilas, actualizarFila, ahora,
 } from "@/lib/sheets";
 import { requerir } from "@/lib/auth";
+import { emitirFacturaSunat } from "@/lib/nubefact";
 
 export const dynamic = "force-dynamic";
 const IGV = 0.18;
@@ -13,10 +14,8 @@ export async function GET() {
   if (g.error) return NextResponse.json({ error: g.error }, { status: g.status });
   try {
     await asegurarEstructura();
-    const [ventas, items] = await Promise.all([
-      leerTabla("Ventas"),
-      leerTabla("VentaItems"),
-    ]);
+    const { Ventas: ventas = [], VentaItems: items = [] } =
+      await leerTablas(["Ventas", "VentaItems"]);
     const conItems = ventas.map((v) => ({
       ...v,
       items: items.filter((i) => i.venta_id === v.id),
@@ -96,7 +95,29 @@ export async function POST(req) {
       cliente_direccion: cliente.direccion || "",
       subtotal, igv, total, metodo_pago,
       num_items: detalle.length,
+      sunat_estado: "", sunat_mensaje: "", sunat_pdf: "", sunat_xml: "", sunat_cdr: "",
     };
+
+    // Las facturas deben emitirse ante SUNAT antes de confirmar la venta.
+    // Si SUNAT la rechaza, no se guarda nada ni se descuenta stock: el
+    // cajero puede corregir los datos e intentar de nuevo.
+    if (tipo === "FACTURA") {
+      let resultadoSunat;
+      try {
+        resultadoSunat = await emitirFacturaSunat({
+          serie, numero, fecha: venta.fecha,
+          cliente: { doc: cliente.doc, nombre: venta.cliente_nombre, direccion: cliente.direccion },
+          items: detalle, subtotal, igv, total,
+        });
+      } catch (e) {
+        return NextResponse.json({ error: e.message }, { status: 502 });
+      }
+      venta.sunat_estado = resultadoSunat.estado;
+      venta.sunat_mensaje = resultadoSunat.mensaje;
+      venta.sunat_pdf = resultadoSunat.pdf;
+      venta.sunat_xml = resultadoSunat.xml;
+      venta.sunat_cdr = resultadoSunat.cdr;
+    }
 
     await agregarFilas("Ventas", [venta]);
     await agregarFilas("VentaItems", detalle.map(({ _producto, ...d }) => ({ venta_id: id, ...d })));

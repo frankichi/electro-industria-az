@@ -58,8 +58,8 @@ export default function Usuarios() {
     <div className="space-y-5 max-w-4xl mx-auto">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl font-bold uppercase">Usuarios</h1>
-          <p className="text-sm text-neutral-500">
+          <h1 className="titulo-pagina">Usuarios</h1>
+          <p className="text-sm text-neutral-500 mt-2">
             Crea cuentas para tu personal. El <b>administrador</b> tiene control total;
             el <b>empleado</b> puede vender, registrar productos y consultar, pero no editar ni borrar.
           </p>

@@ -27,6 +27,14 @@ export default function Comprobantes() {
   if (seleccion) {
     return (
       <div className="max-w-lg mx-auto space-y-4">
+        {seleccion.tipo === "FACTURA" && seleccion.sunat_pdf && (
+          <div className="rounded-md bg-electrico-pale border border-blue-200 text-electrico px-4 py-3 text-sm text-center print:hidden">
+            {seleccion.sunat_estado === "ACEPTADA" ? "✓ Aceptada por SUNAT." : `Estado SUNAT: ${seleccion.sunat_estado}.`}{" "}
+            <a href={seleccion.sunat_pdf} target="_blank" rel="noreferrer" className="underline font-semibold">
+              Ver comprobante oficial (PDF)
+            </a>
+          </div>
+        )}
         <Ticket venta={seleccion} />
         <div className="flex gap-2 justify-center print:hidden">
           <button className="btn-ink" onClick={() => window.print()}>Imprimir</button>
@@ -40,8 +48,8 @@ export default function Comprobantes() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl font-bold uppercase">Comprobantes</h1>
-          <p className="text-sm text-neutral-500">
+          <h1 className="titulo-pagina">Comprobantes</h1>
+          <p className="text-sm text-neutral-500 mt-2">
             Historial de proformas y facturas emitidas. Selecciona una para reimprimirla.
           </p>
         </div>

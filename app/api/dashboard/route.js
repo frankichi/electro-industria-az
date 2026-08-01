@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { asegurarEstructura, leerTabla } from "@/lib/sheets";
+import { asegurarEstructura, leerTablas } from "@/lib/sheets";
 import { requerir } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -15,11 +15,10 @@ export async function GET() {
   if (g.error) return NextResponse.json({ error: g.error }, { status: g.status });
   try {
     await asegurarEstructura();
-    const [productos, ventas, items] = await Promise.all([
-      leerTabla("Productos"),
-      leerTabla("Ventas"),
-      leerTabla("VentaItems"),
-    ]);
+    const tablas = await leerTablas(["Productos", "Ventas", "VentaItems"]);
+    const productos = tablas.Productos || [];
+    const ventas = tablas.Ventas || [];
+    const items = tablas.VentaItems || [];
 
     const hoy = new Date(
       new Date().toLocaleString("en-US", { timeZone: "America/Lima" })

@@ -71,6 +71,14 @@ export default function Ticket({ venta }) {
       <div className="flex justify-between"><span>IGV (18%):</span><span>S/ {Number(venta.igv).toFixed(2)}</span></div>
       <div className="flex justify-between font-bold text-[14px]"><span>TOTAL:</span><span>S/ {Number(venta.total).toFixed(2)}</span></div>
       <div>Pago: {venta.metodo_pago}</div>
+      {venta.tipo === "FACTURA" && venta.sunat_estado && (
+        <>
+          <div className="my-1">{linea}</div>
+          <div className="text-center">
+            {venta.sunat_estado === "ACEPTADA" ? "✓ ACEPTADA POR SUNAT" : `Estado SUNAT: ${venta.sunat_estado}`}
+          </div>
+        </>
+      )}
       <div className="my-1">{linea}</div>
       <div className="text-center">¡Gracias por su compra!</div>
     </div>

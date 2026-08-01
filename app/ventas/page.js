@@ -178,6 +178,14 @@ export default function PuntoDeVenta() {
           {comprobante.tipo} {comprobante.serie}-{comprobante.numero} emitida y registrada.
           Stock actualizado.
         </div>
+        {comprobante.tipo === "FACTURA" && comprobante.sunat_pdf && (
+          <div className="rounded-md bg-electrico-pale border border-blue-200 text-electrico px-4 py-3 text-sm text-center print:hidden">
+            {comprobante.sunat_estado === "ACEPTADA" ? "✓ Aceptada por SUNAT." : `Estado SUNAT: ${comprobante.sunat_estado}.`}{" "}
+            <a href={comprobante.sunat_pdf} target="_blank" rel="noreferrer" className="underline font-semibold">
+              Ver comprobante oficial (PDF)
+            </a>
+          </div>
+        )}
         <Ticket venta={comprobante} />
         <div className="flex gap-2 justify-center print:hidden">
           <button className="btn-ink" onClick={() => window.print()}>Imprimir</button>
@@ -194,8 +202,8 @@ export default function PuntoDeVenta() {
       {/* ── Carrito ─────────────────────────────────────────── */}
       <div className="lg:col-span-2 space-y-4">
         <div>
-          <h1 className="font-display text-3xl font-bold uppercase">Punto de venta</h1>
-          <p className="text-sm text-neutral-500">
+          <h1 className="titulo-pagina">Punto de venta</h1>
+          <p className="text-sm text-neutral-500 mt-2">
             Escanea productos con la pistola: cada lectura los agrega al ticket.
             Escanear el mismo código suma una unidad.
           </p>
@@ -353,9 +361,9 @@ export default function PuntoDeVenta() {
           <div className="flex justify-between text-sm text-neutral-600">
             <span>IGV (18%)</span><span className="font-mono">S/ {igv.toFixed(2)}</span>
           </div>
-          <div className="border-t border-linea pt-2 flex justify-between items-center">
-            <span className="font-display text-lg font-bold uppercase">Total</span>
-            <span className="font-mono text-2xl font-semibold">S/ {total.toFixed(2)}</span>
+          <div className="border-t border-linea pt-2 flex justify-between items-center rounded-lg bg-electrico-pale/70 px-3 py-2 -mx-1">
+            <span className="font-display text-lg font-bold uppercase text-electrico">Total</span>
+            <span className="font-mono text-2xl font-bold text-electrico">S/ {total.toFixed(2)}</span>
           </div>
           <button
             className="btn-volt w-full !py-3.5 text-base"

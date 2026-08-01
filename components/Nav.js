@@ -33,7 +33,7 @@ export default function Nav() {
   const visibles = RUTAS.filter((r) => !r.solo || sesion?.rol === r.solo);
 
   return (
-    <header className="bg-ink text-white sticky top-0 z-30 print:hidden">
+    <header className="bg-ink text-white sticky top-0 z-30 print:hidden shadow-md shadow-black/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 sm:gap-3 h-14 overflow-x-auto">
         <Link href={sesion?.rol === "admin" ? "/" : "/ventas"} className="flex items-center gap-2 mr-2 shrink-0">
           <span className="bg-white rounded-md p-1 flex items-center justify-center h-9 w-9 shrink-0">
@@ -51,9 +51,9 @@ export default function Nav() {
               <Link
                 key={r.href}
                 href={r.href}
-                className={`px-3 py-1.5 rounded-md text-sm font-semibold whitespace-nowrap transition-colors duration-200 ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors duration-200 ${
                   activo
-                    ? "bg-volt text-ink"
+                    ? "bg-volt text-ink shadow-sm"
                     : "text-neutral-300 hover:text-white hover:bg-white/10"
                 }`}
               >

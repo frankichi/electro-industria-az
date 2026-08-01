@@ -4,15 +4,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#1A1D21",
+        ink: "#16181F",
         panel: "#FFFFFF",
-        fondo: "#F2F3F1",
-        linea: "#DDDFDA",
+        fondo: "#F4F5F8",
+        linea: "#E3E5EC",
+        // Azul eléctrico del logo A&Z
+        electrico: { DEFAULT: "#2E2ED0", dark: "#2323A8", pale: "#EDEDFC", glow: "#5B5BE8" },
+        // Amarillo industrial de seguridad (acento de energía)
         volt: { DEFAULT: "#F5B301", dark: "#D99C00", pale: "#FFF6DC" },
         cobre: "#B4551F",
-        electrico: { DEFAULT: "#1D5FD1", pale: "#E8EFFC" },
         ok: "#1F8A4C",
-        alerta: "#C9352B",
+        alerta: "#D93A2B",
       },
       fontFamily: {
         display: ["'Barlow Condensed'", "sans-serif"],
@@ -20,7 +22,11 @@ module.exports = {
         mono: ["'IBM Plex Mono'", "monospace"],
       },
       boxShadow: {
-        card: "0 1px 2px rgba(26,29,33,.06), 0 4px 14px rgba(26,29,33,.05)",
+        card: "0 1px 2px rgba(22,24,31,.05), 0 8px 24px rgba(22,24,31,.06)",
+        pop: "0 2px 6px rgba(46,46,208,.18), 0 12px 32px rgba(46,46,208,.12)",
+      },
+      borderRadius: {
+        card: "14px",
       },
     },
   },

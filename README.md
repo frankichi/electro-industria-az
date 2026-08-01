@@ -128,6 +128,32 @@ SUNAT no ofrece una API pública gratuita para consultas individuales de RUC, as
 
 Sin este token configurado, el sistema sigue funcionando normalmente: solo no autocompleta, y sigues escribiendo los datos del cliente a mano como antes.
 
+## Conectar con SUNAT (facturas)
+
+Con esta conexión activa, cada vez que se emite una **Factura** en el Punto de venta, el sistema:
+1. Genera el comprobante electrónico y lo envía a SUNAT en tiempo real (a través de NubeFacT, un Operador de Servicios Electrónicos — OSE — autorizado por SUNAT).
+2. Si SUNAT lo acepta, guarda el estado y los enlaces al **PDF, XML y CDR** oficiales en tu hoja, y muestra un botón "Ver comprobante oficial" en el sistema.
+3. Si SUNAT lo **rechaza** (datos incorrectos, etc.), el sistema no guarda la venta ni descuenta stock — el cajero ve el motivo del rechazo y puede corregir e intentar de nuevo. Esto evita que queden facturas fantasma sin validez legal registradas en tu inventario.
+
+Las **Proformas** no pasan por SUNAT (no son documentos tributarios), así que se siguen emitiendo al instante como hasta ahora.
+
+### Por qué un intermediario y no "SUNAT directo"
+
+Emitir con validez legal requiere certificado digital propio y un proceso de homologación ante SUNAT que toma semanas. Un OSE hace ese trabajo pesado (firma digital, envío, validación) y expone una API simple — es el mecanismo que usa la gran mayoría de negocios pequeños y medianos en Perú.
+
+### Cómo activarlo
+
+1. Entra a [nubefact.com](https://www.nubefact.com) → **Crear cuenta gratis**.
+2. Sigue su asistente para dar de alta tu empresa (te pedirán tu Clave SOL de SUNAT para autorizarlos como tu operador — es el procedimiento estándar, no necesitas certificado digital propio, ellos lo incluyen).
+3. Una vez activa la cuenta (SUNAT confirma en ~24 horas), en el panel de NubeFacT ve a la sección de **Integración / API** y copia:
+   - Tu **RUTA** (URL del endpoint) → variable `NUBEFACT_URL`
+   - Tu **TOKEN** → variable `NUBEFACT_TOKEN`
+4. Agrega ambas variables en Vercel y haz Redeploy.
+
+**Recomendación:** NubeFacT ofrece un ambiente de pruebas (DEMO) antes de pasar a producción — úsalo primero para verificar que las facturas de prueba salen correctas, y solo después cambia a la URL de producción. Revisa el manual que te entregan al crear la cuenta para la URL exacta de cada ambiente.
+
+Sin estas variables configuradas, el botón "Emitir factura" mostrará un mensaje claro pidiendo configurarlas — las proformas no se ven afectadas.
+
 ## Corrección de códigos con ceros a la izquierda
 
 Si registraste productos antes de esta versión y notas que un código como `038753319544` se guardó sin el cero inicial (`38753319544`), fue porque Google Sheets convertía automáticamente los códigos numéricos en números. Esto ya está corregido de raíz (las columnas se fuerzan a formato de texto), pero:
