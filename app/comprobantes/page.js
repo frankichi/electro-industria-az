@@ -9,7 +9,7 @@ export default function Comprobantes() {
   const [seleccion, setSeleccion] = useState(null);
 
   useEffect(() => {
-    fetch("/api/ventas")
+    fetch("/api/ventas", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => { setVentas(d.ventas || []); setCargando(false); });
   }, []);

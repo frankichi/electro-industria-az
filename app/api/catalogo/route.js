@@ -29,7 +29,10 @@ export async function GET() {
         stock: Number(p.stock) || 0,
         imagen: p.imagen || "",
       }));
-    return NextResponse.json({ productos: visibles });
+    return NextResponse.json(
+      { productos: visibles },
+      { headers: { "Cache-Control": "no-store, must-revalidate" } }
+    );
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

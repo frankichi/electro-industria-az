@@ -29,7 +29,7 @@ export default function Catalogo() {
   const [confirmacion, setConfirmacion] = useState(null);
 
   useEffect(() => {
-    fetch("/api/catalogo")
+    fetch("/api/catalogo", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => (d.error ? setError(d.error) : setProductos(d.productos)))
       .catch(() => setError("No se pudo cargar el catálogo."));

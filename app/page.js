@@ -88,7 +88,7 @@ export default function Dashboard() {
 
   function cargar() {
     setActualizando(true);
-    fetch("/api/dashboard")
+    fetch("/api/dashboard", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => { d.error ? setError(d.error) : setData(d); setActualizando(false); })
       .catch((e) => { setError(String(e)); setActualizando(false); });

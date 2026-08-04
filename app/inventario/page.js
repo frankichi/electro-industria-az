@@ -31,7 +31,7 @@ export default function Inventario() {
 
   async function cargar() {
     setCargando(true);
-    const r = await fetch("/api/productos").then((x) => x.json());
+    const r = await fetch("/api/productos", { cache: "no-store" }).then((x) => x.json());
     setProductos(r.productos || []);
     setCargando(false);
   }
@@ -42,7 +42,7 @@ export default function Inventario() {
   }, []);
 
   async function cargarCategorias() {
-    const r = await fetch("/api/categorias").then((x) => x.json());
+    const r = await fetch("/api/categorias", { cache: "no-store" }).then((x) => x.json());
     const guardadas = r.categorias || [];
     const fusion = [...CATEGORIAS_BASE];
     guardadas.forEach((c) => { if (!fusion.some((f) => f.toLowerCase() === c.toLowerCase())) fusion.push(c); });
