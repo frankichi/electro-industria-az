@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Ticket from "@/components/Ticket";
+import { fetchJSON } from "@/lib/fetchJson";
 
 export default function Comprobantes() {
   const [ventas, setVentas] = useState([]);
@@ -9,9 +10,10 @@ export default function Comprobantes() {
   const [seleccion, setSeleccion] = useState(null);
 
   useEffect(() => {
-    fetch("/api/ventas", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => { setVentas(d.ventas || []); setCargando(false); });
+    fetchJSON("/api/ventas")
+      .then((d) => setVentas(d.ventas || []))
+      .catch(() => setVentas([]))
+      .finally(() => setCargando(false));
   }, []);
 
   const filtradas = ventas.filter((v) => {

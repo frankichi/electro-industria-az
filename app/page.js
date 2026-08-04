@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { fetchJSON } from "@/lib/fetchJson";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   CartesianGrid, AreaChart, Area, PieChart, Pie, Cell, Legend,
@@ -88,10 +89,10 @@ export default function Dashboard() {
 
   function cargar() {
     setActualizando(true);
-    fetch("/api/dashboard", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => { d.error ? setError(d.error) : setData(d); setActualizando(false); })
-      .catch((e) => { setError(String(e)); setActualizando(false); });
+    fetchJSON("/api/dashboard")
+      .then((d) => setData(d))
+      .catch((e) => setError(e.message))
+      .finally(() => setActualizando(false));
   }
   useEffect(() => { cargar(); }, []);
 

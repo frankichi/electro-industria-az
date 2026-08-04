@@ -31,9 +31,14 @@ export default function Inventario() {
 
   async function cargar() {
     setCargando(true);
-    const r = await fetch("/api/productos", { cache: "no-store" }).then((x) => x.json());
-    setProductos(r.productos || []);
-    setCargando(false);
+    try {
+      const r = await fetchJSON("/api/productos");
+      setProductos(r.productos || []);
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
+    } finally {
+      setCargando(false);
+    }
   }
   useEffect(() => {
     cargar();
@@ -42,7 +47,12 @@ export default function Inventario() {
   }, []);
 
   async function cargarCategorias() {
-    const r = await fetch("/api/categorias", { cache: "no-store" }).then((x) => x.json());
+    let r;
+    try {
+      r = await fetchJSON("/api/categorias");
+    } catch {
+      return; // no crítico: se usan las categorías base como respaldo
+    }
     const guardadas = r.categorias || [];
     const fusion = [...CATEGORIAS_BASE];
     guardadas.forEach((c) => { if (!fusion.some((f) => f.toLowerCase() === c.toLowerCase())) fusion.push(c); });
