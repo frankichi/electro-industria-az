@@ -7,6 +7,7 @@ const RUTAS = [
   { href: "/", label: "Dashboard", solo: "admin" },
   { href: "/ventas", label: "Punto de venta" },
   { href: "/inventario", label: "Inventario" },
+  { href: "/pedidos", label: "Pedidos" },
   { href: "/comprobantes", label: "Comprobantes" },
   { href: "/usuarios", label: "Usuarios", solo: "admin" },
 ];
@@ -16,7 +17,7 @@ export default function Nav() {
   const [sesion, setSesion] = useState(null);
 
   useEffect(() => {
-    if (path === "/login") return;
+    if (path === "/login" || path.startsWith("/catalogo")) return;
     fetch("/api/auth/yo")
       .then((r) => r.json())
       .then((d) => setSesion(d.sesion))
@@ -28,7 +29,7 @@ export default function Nav() {
     window.location.href = "/login";
   }
 
-  if (path === "/login") return null;
+  if (path === "/login" || path.startsWith("/catalogo")) return null;
 
   const visibles = RUTAS.filter((r) => !r.solo || sesion?.rol === r.solo);
 

@@ -29,10 +29,11 @@ async function verificar(token, secret) {
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  // Estáticos y APIs (las APIs se protegen solas con Node crypto)
+  // Estáticos, APIs (se protegen solas) y páginas 100% públicas
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/catalogo") ||
     pathname.includes(".")
   ) {
     return NextResponse.next();

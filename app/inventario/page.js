@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import CampoEscaneo from "@/components/CampoEscaneo";
+import ImagenProducto from "@/components/ImagenProducto";
 
 const VACIO = {
   codigo: "", nombre: "", descripcion: "", categoria: "", marca: "",
@@ -141,12 +142,17 @@ export default function Inventario() {
             {esAdmin ? "Escanea un código: si existe lo abres para editar, si es nuevo lo registras." : "Escanea un código: si es nuevo lo registras; si existe, verás su stock y precio."}
           </p>
         </div>
-        <button
-          className="btn-volt"
-          onClick={() => { setForm({ ...VACIO }); setEsEdicion(false); setMsj(null); }}
-        >
-          + Registrar sin escanear
-        </button>
+        <div className="flex gap-2">
+          <a href="/catalogo" target="_blank" rel="noreferrer" className="btn-azul">
+            Ver catálogo público ↗
+          </a>
+          <button
+            className="btn-volt"
+            onClick={() => { setForm({ ...VACIO }); setEsEdicion(false); setMsj(null); }}
+          >
+            + Registrar sin escanear
+          </button>
+        </div>
       </div>
 
       <div className="card p-4">
@@ -260,6 +266,9 @@ export default function Inventario() {
                 value={form.precio} onChange={(e) => set("precio", e.target.value)} />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
+              <ImagenProducto url={form.imagen} onUrl={(u) => set("imagen", u)} />
+            </div>
+            <div className="sm:col-span-2 lg:col-span-3">
               <label className="label" htmlFor="f-desc">Descripción</label>
               <textarea id="f-desc" className="input" rows={2} value={form.descripcion}
                 onChange={(e) => set("descripcion", e.target.value)} />
@@ -337,8 +346,25 @@ export default function Inventario() {
                   <tr key={p.codigo} className="border-t border-linea hover:bg-fondo/60">
                     <td className="px-4 py-2.5"><span className="codigo">{p.codigo}</span></td>
                     <td className="px-4 py-2.5">
-                      <div className="font-semibold">{p.nombre}</div>
-                      <div className="text-xs text-neutral-500">{p.marca}</div>
+                      <div className="flex items-center gap-2.5">
+                        {p.imagen ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imagen} alt="" loading="lazy"
+                            className="w-10 h-10 rounded-lg object-cover border border-linea shrink-0" />
+                        ) : (
+                          <span className="w-10 h-10 rounded-lg bg-fondo border border-linea shrink-0 flex items-center justify-center text-neutral-300">
+                            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <rect x="3" y="3" width="18" height="18" rx="2" />
+                              <circle cx="9" cy="9" r="2" />
+                              <path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21" />
+                            </svg>
+                          </span>
+                        )}
+                        <div>
+                          <div className="font-semibold">{p.nombre}</div>
+                          <div className="text-xs text-neutral-500">{p.marca}</div>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-2.5 text-neutral-600">{p.categoria}</td>
                     <td className="px-4 py-2.5 text-xs text-neutral-600">

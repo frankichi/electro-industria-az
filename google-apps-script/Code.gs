@@ -32,6 +32,7 @@ const CABECERAS = {
     "codigo", "nombre", "descripcion", "categoria", "marca", "unidad",
     "voltaje", "amperaje", "peso", "medidas", "stock", "stock_minimo",
     "costo", "precio", "ubicacion", "fecha_registro", "fecha_actualizacion",
+    "imagen",
   ],
   Ventas: [
     "id", "tipo", "serie", "numero", "fecha", "cliente_doc", "cliente_nombre",
@@ -51,6 +52,12 @@ const CABECERAS = {
     "fecha_registro", "creado_por",
   ],
   Categorias: ["nombre", "fecha_registro", "creado_por"],
+  Pedidos: [
+    "id", "fecha", "cliente_nombre", "cliente_telefono", "cliente_email",
+    "cliente_direccion", "nota", "total", "estado", "num_items",
+    "atendido_por", "fecha_atencion",
+  ],
+  PedidoItems: ["pedido_id", "codigo", "nombre", "cantidad", "precio_unit", "total"],
 };
 
 function doPost(e) {
@@ -130,7 +137,7 @@ function ensureStructure(ss) {
   // más retrasaba la carga del sistema). Cuando agregues una pestaña o
   // columna nueva a CABECERAS, el próximo despliegue del script vuelve
   // a forzar la verificación una vez (VERSION_FORMATO cambia el caché).
-  var VERSION_FORMATO = "v3-cache15min";
+  var VERSION_FORMATO = "v4-catalogo";
   var ultimaVerificacion = props.getProperty("estructura_verificada_" + VERSION_FORMATO);
   var ahoraMs = Date.now();
   if (ultimaVerificacion && (ahoraMs - Number(ultimaVerificacion) < 15 * 60 * 1000)) {

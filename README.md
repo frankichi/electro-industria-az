@@ -18,7 +18,7 @@ El sistema también permite escanear con la **cámara del celular** (botón "Cá
 
 ### 1. Tu hoja de Google Sheets
 
-Ya tienes creada `ElectroIndustriaAZ BD`. No necesitas crear pestañas ni columnas a mano: **el sistema las crea automáticamente** (`Productos`, `Ventas`, `VentaItems`, `Movimientos`, `Usuarios`, `Clientes`, `Categorias`) la primera vez que se conecta.
+Ya tienes creada `ElectroIndustriaAZ BD`. No necesitas crear pestañas ni columnas a mano: **el sistema las crea automáticamente** (`Productos`, `Ventas`, `VentaItems`, `Movimientos`, `Usuarios`, `Clientes`, `Categorias`, `Pedidos`, `PedidoItems`) la primera vez que se conecta.
 
 ### 2. Instalar el Apps Script dentro de tu hoja (reemplaza a la cuenta de servicio)
 
@@ -127,6 +127,27 @@ SUNAT no ofrece una API pública gratuita para consultas individuales de RUC, as
    - Puedes guardar ese cliente con un clic para que la próxima venta sea instantánea, sin volver a consultar.
 
 Sin este token configurado, el sistema sigue funcionando normalmente: solo no autocompleta, y sigues escribiendo los datos del cliente a mano como antes.
+
+## Catálogo público con pedidos en línea
+
+El sistema incluye un **catálogo web para tus clientes** en la dirección `/catalogo` de tu sitio (ej. `https://electro-industria-az.vercel.app/catalogo`). Es **público** — no requiere que el cliente cree cuenta — y puedes compartir el enlace por WhatsApp, redes o imprimirlo como QR.
+
+Cómo funciona:
+- Muestra **solo productos con stock disponible**, con su foto, precio, marca y especificaciones. Nunca expone costos, ubicación en tienda ni datos internos.
+- El cliente arma su **carrito** (las cantidades se limitan al stock real), deja su nombre y teléfono, y envía el pedido.
+- El pedido llega a la sección **Pedidos** del sistema (visible para admin y empleados), con estado `PENDIENTE`. Desde ahí puedes contactar al cliente con un clic vía **WhatsApp**, marcarlo como atendido o anularlo.
+- **El stock no se descuenta al recibir el pedido** (es una solicitud, no una venta). Cuando el cliente confirma, generas la venta en el Punto de venta como siempre — ahí sí se descuenta stock y se emite el comprobante. Así el inventario nunca queda "reservado" por pedidos que no se concretan.
+
+### Fotos de productos
+
+En **Inventario**, al registrar o editar un producto puedes **adjuntar una imagen o tomar una foto** (en celulares se abre la cámara directamente). La imagen se comprime automáticamente en el navegador y se aloja gratis en **ImgBB**; en tu hoja de Google Sheets solo se guarda el **enlace** (columna `imagen`), que pesa unos pocos caracteres. Tu Google Drive **no se usa** y no ocupa espacio ahí. Los productos sin foto muestran un ícono de rayo en el catálogo.
+
+Para activarlo (2 minutos, gratis):
+1. Crea una cuenta en [imgbb.com](https://imgbb.com).
+2. Entra a [api.imgbb.com](https://api.imgbb.com) → **Get API key** → copia la clave.
+3. En Vercel agrega la variable `IMGBB_API_KEY` con esa clave → Redeploy.
+
+Sin la clave configurada, el resto del sistema y el catálogo funcionan normalmente — solo que sin fotos (se muestra el ícono de rayo).
 
 ## Conectar con SUNAT (facturas)
 
