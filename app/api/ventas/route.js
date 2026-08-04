@@ -6,6 +6,7 @@ import { requerir } from "@/lib/auth";
 import { emitirFacturaSunat } from "@/lib/nubefact";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 const IGV = 0.18;
 
 // GET /api/ventas → historial de comprobantes con sus ítems

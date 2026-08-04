@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import CampoEscaneo from "@/components/CampoEscaneo";
 import ImagenProducto from "@/components/ImagenProducto";
+import { fetchJSON } from "@/lib/fetchJson";
 
 const VACIO = {
   codigo: "", nombre: "", descripcion: "", categoria: "", marca: "",
@@ -90,32 +91,31 @@ export default function Inventario() {
     e.preventDefault();
     setGuardando(true);
     setMsj(null);
-    const r = await fetch("/api/productos", {
-      method: esEdicion ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    const data = await r.json();
-    setGuardando(false);
-    if (!r.ok) {
-      setMsj({ tipo: "error", texto: data.error || "No se pudo guardar" });
-      return;
+    try {
+      await fetchJSON("/api/productos", {
+        method: esEdicion ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      setMsj({ tipo: "ok", texto: esEdicion ? "Producto actualizado" : "Producto registrado" });
+      setForm(null);
+      cargar();
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
+    } finally {
+      setGuardando(false);
     }
-    setMsj({ tipo: "ok", texto: esEdicion ? "Producto actualizado" : "Producto registrado" });
-    setForm(null);
-    cargar();
   }
 
   async function eliminar(p) {
     if (!confirm(`¿Eliminar definitivamente "${p.nombre}" (${p.codigo})? Esta acción no se puede deshacer.`)) return;
-    const r = await fetch(`/api/productos?codigo=${encodeURIComponent(p.codigo)}`, { method: "DELETE" });
-    const data = await r.json();
-    if (!r.ok) {
-      setMsj({ tipo: "error", texto: data.error || "No se pudo eliminar" });
-      return;
+    try {
+      await fetchJSON(`/api/productos?codigo=${encodeURIComponent(p.codigo)}`, { method: "DELETE" });
+      setMsj({ tipo: "ok", texto: `Producto "${p.nombre}" eliminado` });
+      cargar();
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
     }
-    setMsj({ tipo: "ok", texto: `Producto "${p.nombre}" eliminado` });
-    cargar();
   }
 
   const filtrados = productos.filter((p) => {

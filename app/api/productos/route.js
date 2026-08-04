@@ -5,6 +5,7 @@ import {
 import { requerir } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30; // Vercel: cada llamada a Apps Script puede tardar 1-3s
 
 // GET /api/productos            → todos los productos
 // GET /api/productos?codigo=XYZ → un producto por código escaneado
@@ -71,13 +72,20 @@ export async function PUT(req) {
   if (g.error) return NextResponse.json({ error: g.error }, { status: g.status });
   try {
     const data = await req.json();
-    const productos = await leerTabla("Productos");
-    const actual = productos.find(
-      (p) => String(p.codigo).trim() === String(data.codigo).trim()
-    );
-    if (!actual) {
-      return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
+
+    // Si el frontend ya conoce la fila (viene de la lista que cargó antes),
+    // nos ahorramos una llamada completa a Apps Script para buscarla.
+    let actual;
+    if (data._fila) {
+      actual = data;
+    } else {
+      const productos = await leerTabla("Productos");
+      actual = productos.find((p) => String(p.codigo).trim() === String(data.codigo).trim());
+      if (!actual) {
+        return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
+      }
     }
+
     const stockAnterior = Number(actual.stock) || 0;
     const actualizado = {
       ...actual, ...data,

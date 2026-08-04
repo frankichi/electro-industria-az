@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { fetchJSON } from "@/lib/fetchJson";
 
 /**
  * Subida de imagen de producto: permite adjuntar un archivo o tomar una
@@ -67,7 +68,7 @@ export default function ImagenProducto({ url, onUrl }) {
     setSubiendo(true);
     try {
       const base64 = await comprimirImagen(file);
-      const r = await fetch("/api/imagenes", {
+      const data = await fetchJSON("/api/imagenes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -75,14 +76,13 @@ export default function ImagenProducto({ url, onUrl }) {
           tipo: "image/jpeg",
           base64,
         }),
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || "No se pudo subir la imagen");
+      }, 30000);
       onUrl(data.url);
     } catch (e) {
       setError(e.message);
+    } finally {
+      setSubiendo(false);
     }
-    setSubiendo(false);
   }
 
   return (
@@ -131,9 +131,9 @@ export default function ImagenProducto({ url, onUrl }) {
           {error && <p className="text-xs text-alerta font-medium">{error}</p>}
         </div>
       </div>
-      <input ref={inputArchivo} type="file" accept="image/*" className="hidden"
+      <input ref={inputArchivo} id="imagen-archivo" name="imagen-archivo" type="file" accept="image/*" className="hidden"
         onChange={(e) => { procesar(e.target.files?.[0]); e.target.value = ""; }} />
-      <input ref={inputCamara} type="file" accept="image/*" capture="environment" className="hidden"
+      <input ref={inputCamara} id="imagen-camara" name="imagen-camara" type="file" accept="image/*" capture="environment" className="hidden"
         onChange={(e) => { procesar(e.target.files?.[0]); e.target.value = ""; }} />
     </div>
   );

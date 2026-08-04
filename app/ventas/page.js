@@ -2,6 +2,7 @@
 import { useState } from "react";
 import CampoEscaneo from "@/components/CampoEscaneo";
 import Ticket from "@/components/Ticket";
+import { fetchJSON } from "@/lib/fetchJson";
 
 const IGV = 0.18;
 
@@ -34,24 +35,17 @@ export default function PuntoDeVenta() {
     setBuscandoCliente(true);
     try {
       // 1) Buscar primero en los clientes ya guardados
-      const local = await fetch(`/api/clientes?doc=${encodeURIComponent(doc)}`).then((r) => r.json());
+      const local = await fetchJSON(`/api/clientes?doc=${encodeURIComponent(doc)}`);
       if (local.cliente) {
         setCliente({ doc, nombre: local.cliente.nombre, direccion: local.cliente.direccion || "" });
         setClienteEncontrado("local");
         setMsjCliente({ tipo: "ok", texto: "Cliente encontrado en tu registro." });
-        setBuscandoCliente(false);
         return;
       }
 
       // 2) Si no está guardado y parece RUC/DNI válido, consultar SUNAT/RENIEC
       const tipoDoc = esRuc ? "ruc" : "dni";
-      const r = await fetch(`/api/sunat?tipo=${tipoDoc}&numero=${doc}`);
-      const data = await r.json();
-      if (!r.ok) {
-        setMsjCliente({ tipo: "error", texto: data.error || "No se pudo consultar SUNAT." });
-        setBuscandoCliente(false);
-        return;
-      }
+      const data = await fetchJSON(`/api/sunat?tipo=${tipoDoc}&numero=${doc}`);
       setCliente({ doc, nombre: data.resultado.nombre, direccion: data.resultado.direccion });
       setClienteEncontrado("sunat");
       setMsjCliente({
@@ -61,28 +55,32 @@ export default function PuntoDeVenta() {
           : "Datos obtenidos de RENIEC.",
       });
     } catch (e) {
-      setMsjCliente({ tipo: "error", texto: "No se pudo completar la búsqueda." });
+      setMsjCliente({ tipo: "error", texto: e.message });
+    } finally {
+      setBuscandoCliente(false);
     }
-    setBuscandoCliente(false);
   }
 
   async function guardarCliente() {
     if (!cliente.doc || !cliente.nombre) return;
     setBuscandoCliente(true);
-    const r = await fetch("/api/clientes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        doc: cliente.doc,
-        tipo_doc: cliente.doc.length === 11 ? "RUC" : "DNI",
-        nombre: cliente.nombre,
-        direccion: cliente.direccion,
-      }),
-    });
-    setBuscandoCliente(false);
-    if (r.ok) {
+    try {
+      await fetchJSON("/api/clientes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doc: cliente.doc,
+          tipo_doc: cliente.doc.length === 11 ? "RUC" : "DNI",
+          nombre: cliente.nombre,
+          direccion: cliente.direccion,
+        }),
+      });
       setClienteEncontrado("local");
       setMsjCliente({ tipo: "ok", texto: "Cliente guardado. La próxima vez se autocompleta al instante." });
+    } catch (e) {
+      setMsjCliente({ tipo: "error", texto: e.message });
+    } finally {
+      setBuscandoCliente(false);
     }
   }
 
@@ -95,8 +93,14 @@ export default function PuntoDeVenta() {
       return;
     }
     setBuscando(true);
-    const r = await fetch(`/api/productos?codigo=${encodeURIComponent(codigo)}`)
-      .then((x) => x.json());
+    let r;
+    try {
+      r = await fetchJSON(`/api/productos?codigo=${encodeURIComponent(codigo)}`);
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
+      setBuscando(false);
+      return;
+    }
     setBuscando(false);
     if (!r.producto) {
       setMsj({
@@ -149,25 +153,30 @@ export default function PuntoDeVenta() {
       return;
     }
     setProcesando(true);
-    const r = await fetch("/api/ventas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tipo, cliente, metodo_pago: metodoPago,
-        items: carrito.map((c) => ({ codigo: c.codigo, cantidad: c.cantidad })),
-      }),
-    });
-    const data = await r.json();
-    setProcesando(false);
-    if (!r.ok) {
-      setMsj({ tipo: "error", texto: data.error || "No se pudo emitir el comprobante" });
-      return;
+    try {
+      // Las facturas pasan por SUNAT, que puede tardar más que una proforma normal.
+      const data = await fetchJSON(
+        "/api/ventas",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tipo, cliente, metodo_pago: metodoPago,
+            items: carrito.map((c) => ({ codigo: c.codigo, cantidad: c.cantidad })),
+          }),
+        },
+        tipo === "FACTURA" ? 45000 : 25000
+      );
+      setComprobante(data.venta);
+      setCarrito([]);
+      setCliente({ doc: "", nombre: "", direccion: "" });
+      setClienteEncontrado(null);
+      setMsjCliente(null);
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
+    } finally {
+      setProcesando(false);
     }
-    setComprobante(data.venta);
-    setCarrito([]);
-    setCliente({ doc: "", nombre: "", direccion: "" });
-    setClienteEncontrado(null);
-    setMsjCliente(null);
   }
 
   // ── Vista de comprobante emitido ─────────────────────────

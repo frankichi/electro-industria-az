@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { asegurarEstructura, leerTabla } from "@/lib/sheets";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 /**
  * Catálogo PÚBLICO (no requiere sesión): lo consumen los clientes desde

@@ -3,6 +3,7 @@ import { asegurarEstructura, leerTabla, agregarFilas, actualizarFila, ahora } fr
 import { requerir } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 const err = (t, s = 400) => NextResponse.json({ error: t }, { status: s });
 
 // GET /api/clientes            → todos los clientes

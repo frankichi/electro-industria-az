@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { fetchJSON } from "@/lib/fetchJson";
 
 const VACIO = { usuario: "", nombre: "", rol: "empleado", password: "" };
 
@@ -12,29 +13,35 @@ export default function Usuarios() {
 
   async function cargar() {
     setCargando(true);
-    const r = await fetch("/api/usuarios").then((x) => x.json());
-    setUsuarios(r.usuarios || []);
-    setCargando(false);
+    try {
+      const r = await fetchJSON("/api/usuarios");
+      setUsuarios(r.usuarios || []);
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
+    } finally {
+      setCargando(false);
+    }
   }
   useEffect(() => { cargar(); }, []);
 
   async function llamar(metodo, body, exito) {
     setEnviando(true);
     setMsj(null);
-    const r = await fetch("/api/usuarios", {
-      method: metodo,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await r.json();
-    setEnviando(false);
-    if (!r.ok) {
-      setMsj({ tipo: "error", texto: data.error });
+    try {
+      await fetchJSON("/api/usuarios", {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      setMsj({ tipo: "ok", texto: exito });
+      cargar();
+      return true;
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
       return false;
+    } finally {
+      setEnviando(false);
     }
-    setMsj({ tipo: "ok", texto: exito });
-    cargar();
-    return true;
   }
 
   async function crear(e) {

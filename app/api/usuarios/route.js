@@ -3,6 +3,7 @@ import { asegurarEstructura, leerTabla, agregarFilas, actualizarFila, ahora } fr
 import { requerir, hashPassword } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 const err = (t, s = 400) => NextResponse.json({ error: t }, { status: s });
 
 // GET /api/usuarios → lista de usuarios (sin hashes) + solicitudes de recuperación

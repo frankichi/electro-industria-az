@@ -3,6 +3,7 @@ import { asegurarEstructura, leerTablas } from "@/lib/sheets";
 import { requerir } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 // Convierte "31/07/2026, 14:22:05" (es-PE) a "2026-07-31"
 function fechaISO(f) {

@@ -5,6 +5,7 @@ import {
 import { requerir } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 const err = (t, s = 400) => NextResponse.json({ error: t }, { status: s });
 
 // GET /api/pedidos → historial de pedidos (solo personal con sesión)

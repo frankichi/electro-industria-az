@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { fetchJSON } from "@/lib/fetchJson";
 
 const sol = (n) =>
   "S/ " + Number(n || 0).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -19,26 +20,30 @@ export default function Pedidos() {
 
   async function cargar() {
     setCargando(true);
-    const r = await fetch("/api/pedidos").then((x) => x.json());
-    setPedidos(r.pedidos || []);
-    setCargando(false);
+    try {
+      const r = await fetchJSON("/api/pedidos");
+      setPedidos(r.pedidos || []);
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
+    } finally {
+      setCargando(false);
+    }
   }
   useEffect(() => { cargar(); }, []);
 
   async function cambiarEstado(id, estado) {
     setMsj(null);
-    const r = await fetch("/api/pedidos", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, estado }),
-    });
-    const data = await r.json();
-    if (!r.ok) {
-      setMsj({ tipo: "error", texto: data.error });
-      return;
+    try {
+      await fetchJSON("/api/pedidos", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, estado }),
+      });
+      setMsj({ tipo: "ok", texto: `Pedido ${id} marcado como ${estado.toLowerCase()}.` });
+      cargar();
+    } catch (e) {
+      setMsj({ tipo: "error", texto: e.message });
     }
-    setMsj({ tipo: "ok", texto: `Pedido ${id} marcado como ${estado.toLowerCase()}.` });
-    cargar();
   }
 
   const filtrados = pedidos.filter((p) => filtro === "TODOS" || p.estado === filtro);

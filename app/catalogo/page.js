@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { fetchJSON } from "@/lib/fetchJson";
 
 const sol = (n) =>
   "S/ " + Number(n || 0).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -80,23 +81,23 @@ export default function Catalogo() {
     e.preventDefault();
     setMsj(null);
     setEnviando(true);
-    const r = await fetch("/api/pedidos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cliente, nota,
-        items: itemsCarrito.map((i) => ({ codigo: i.codigo, cantidad: i.cantidad })),
-      }),
-    });
-    const data = await r.json();
-    setEnviando(false);
-    if (!r.ok) {
-      setMsj({ texto: data.error || "No se pudo enviar el pedido." });
-      return;
+    try {
+      const data = await fetchJSON("/api/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cliente, nota,
+          items: itemsCarrito.map((i) => ({ codigo: i.codigo, cantidad: i.cantidad })),
+        }),
+      });
+      setConfirmacion(data.pedido);
+      setCarrito({});
+      setAbierto(false);
+    } catch (e) {
+      setMsj({ texto: e.message });
+    } finally {
+      setEnviando(false);
     }
-    setConfirmacion(data.pedido);
-    setCarrito({});
-    setAbierto(false);
   }
 
   const empresa = process.env.NEXT_PUBLIC_EMPRESA_NOMBRE || "ELECTRO INDUSTRIA A&Z";
