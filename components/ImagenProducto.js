@@ -8,24 +8,49 @@ import { useRef, useState } from "react";
  * (alojamiento gratuito); en la hoja de Google Sheets solo se guarda la URL.
  */
 
-async function comprimirImagen(file, maxLado = 900, calidad = 0.82) {
+/**
+ * Decodifica el archivo de imagen (JPG, PNG, WEBP, HEIC, etc.) y lo dibuja
+ * en un canvas para comprimirlo. Usa createImageBitmap primero, que
+ * decodifica formatos modernos (como WEBP) de forma más confiable en la
+ * mayoría de navegadores; si no está disponible o falla, cae al método
+ * clásico con <img>.
+ */
+async function decodificarComoBitmap(file) {
+  if ("createImageBitmap" in window) {
+    try {
+      return await createImageBitmap(file);
+    } catch {
+      // sigue al método de respaldo
+    }
+  }
   const dataUrl = await new Promise((res, rej) => {
     const r = new FileReader();
     r.onload = () => res(r.result);
     r.onerror = () => rej(new Error("No se pudo leer el archivo"));
     r.readAsDataURL(file);
   });
-  const img = await new Promise((res, rej) => {
+  return new Promise((res, rej) => {
     const i = new Image();
     i.onload = () => res(i);
-    i.onerror = () => rej(new Error("El archivo no es una imagen válida"));
+    i.onerror = () =>
+      rej(new Error(
+        "Tu navegador no pudo abrir esta imagen. Prueba con otra foto o conviértela a JPG/PNG."
+      ));
     i.src = dataUrl;
   });
-  const escala = Math.min(1, maxLado / Math.max(img.width, img.height));
+}
+
+async function comprimirImagen(file, maxLado = 900, calidad = 0.82) {
+  const img = await decodificarComoBitmap(file);
+  const anchoOriginal = img.width;
+  const altoOriginal = img.height;
+  const escala = Math.min(1, maxLado / Math.max(anchoOriginal, altoOriginal));
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(img.width * escala);
-  canvas.height = Math.round(img.height * escala);
-  canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+  canvas.width = Math.round(anchoOriginal * escala);
+  canvas.height = Math.round(altoOriginal * escala);
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  if (img.close) img.close(); // libera memoria si es un ImageBitmap
   const jpeg = canvas.toDataURL("image/jpeg", calidad);
   return jpeg.split(",")[1]; // solo el base64
 }
