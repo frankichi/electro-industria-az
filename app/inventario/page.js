@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import CampoEscaneo from "@/components/CampoEscaneo";
 import ImagenProducto from "@/components/ImagenProducto";
 import { fetchJSON } from "@/lib/fetchJson";
+import VisorImagen from "@/components/VisorImagen";
 
 const VACIO = {
   codigo: "", nombre: "", descripcion: "", categoria: "", marca: "",
@@ -27,6 +28,7 @@ export default function Inventario() {
   const [msj, setMsj] = useState(null);
   const [sesion, setSesion] = useState(null);
   const [categorias, setCategorias] = useState(CATEGORIAS_BASE);
+  const [zoomUrl, setZoomUrl] = useState(null);
   const esAdmin = sesion?.rol === "admin";
 
   async function cargar() {
@@ -358,9 +360,15 @@ export default function Inventario() {
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-2.5">
                         {p.imagen ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imagen} alt="" loading="lazy"
-                            className="w-10 h-10 rounded-lg object-cover border border-linea shrink-0" />
+                          <button
+                            type="button"
+                            onClick={() => setZoomUrl(p.imagen)}
+                            className="w-10 h-10 rounded-lg overflow-hidden border border-linea shrink-0 cursor-zoom-in hover:ring-2 hover:ring-electrico/40 transition-shadow"
+                            aria-label={`Ver foto de ${p.nombre} en grande`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={p.imagen} alt="" loading="lazy" className="w-full h-full object-cover" />
+                          </button>
                         ) : (
                           <span className="w-10 h-10 rounded-lg bg-fondo border border-linea shrink-0 flex items-center justify-center text-neutral-300">
                             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -418,6 +426,8 @@ export default function Inventario() {
           </table>
         </div>
       </div>
+
+      <VisorImagen url={zoomUrl} onCerrar={() => setZoomUrl(null)} />
     </div>
   );
 }

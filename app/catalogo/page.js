@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { fetchJSON } from "@/lib/fetchJson";
+import VisorImagen from "@/components/VisorImagen";
 
 const sol = (n) =>
   "S/ " + Number(n || 0).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -27,6 +28,7 @@ export default function Catalogo() {
   const [enviando, setEnviando] = useState(false);
   const [msj, setMsj] = useState(null);
   const [confirmacion, setConfirmacion] = useState(null);
+  const [zoomUrl, setZoomUrl] = useState(null);
 
   useEffect(() => {
     fetchJSON("/api/catalogo")
@@ -185,7 +187,7 @@ export default function Catalogo() {
           <div className="card p-6 text-center text-alerta text-sm">{error}</div>
         )}
         {!productos && !error && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {[...Array(8)].map((_, i) => (
               <div key={i} className="card h-64 animate-pulse bg-neutral-100" />
             ))}
@@ -196,17 +198,24 @@ export default function Catalogo() {
             No se encontraron productos con ese filtro.
           </div>
         )}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
           {visibles.map((p) => {
             const enCarrito = carrito[p.codigo] || 0;
             const especificaciones = [p.voltaje, p.amperaje, p.medidas].filter(Boolean).join(" · ");
             return (
               <article key={p.codigo} className="card overflow-hidden flex flex-col hover:shadow-pop transition-shadow duration-200">
-                <div className="aspect-square w-full overflow-hidden border-b border-linea">
+                <div className="aspect-square w-full overflow-hidden border-b border-linea bg-fondo">
                   {p.imagen ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.imagen} alt={p.nombre} loading="lazy"
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                    <button
+                      type="button"
+                      onClick={() => setZoomUrl(p.imagen)}
+                      className="w-full h-full cursor-zoom-in group"
+                      aria-label={`Ver foto de ${p.nombre} en grande`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.imagen} alt={p.nombre} loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    </button>
                   ) : (
                     <SinFoto />
                   )}
@@ -351,6 +360,8 @@ export default function Catalogo() {
           </div>
         </div>
       )}
+
+      <VisorImagen url={zoomUrl} onCerrar={() => setZoomUrl(null)} />
     </div>
   );
 }
